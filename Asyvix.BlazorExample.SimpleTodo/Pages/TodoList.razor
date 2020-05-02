@@ -3,7 +3,7 @@
 @using Asyvix.BlazorExample.SimpleTodo.Data
 
 <h3>TodoList</h3>
-<input @bind="itxTodoContent" @onkeydown="itxTodoContent_OnKeyDown" @oninput="(x) => { itxTodoContent = (string)x.Value; }"/>
+<input @bind="_itxTodoContent" @onkeydown="itxTodoContent_OnKeyDown" @oninput="(x) => { _currentValue = (string)x.Value; }"/>
 <div class="btn btn-lg btn-primary">새로운 아이템</div>
 <table>
     @foreach (var todo in _todoItems)
@@ -35,16 +35,18 @@
     }
 </table>
 @code {
-    private string itxTodoContent { get; set; }
+    private string _itxTodoContent { get; set; }
+    //조합형글자는 OnChange에서 직접 주면 문제가 있어서 따로 불러와야함.
+    private string _currentValue { get; set; }
     private List<TodoItem> _todoItems = new List<TodoItem>();
 
     private void itxTodoContent_OnKeyDown(KeyboardEventArgs e)
     {
-        StateHasChanged();
 
         if(e.Key.ToLower() == "Enter".ToLower())
         {
-            _todoItems.Add(new TodoItem { Content = itxTodoContent });
+            _todoItems.Add(new TodoItem { Content = _currentValue });
+            _itxTodoContent = string.Empty;
         }
     }
 
