@@ -1,0 +1,67 @@
+﻿@page "/todolist"
+
+@using Asyvix.BlazorExample.SimpleTodo.Data
+
+<h3>TodoList</h3>
+<input @bind="itxTodoContent" @onkeydown="itxTodoContent_OnKeyDown" @oninput="(x) => { itxTodoContent = (string)x.Value; }"/>
+<div class="btn btn-lg btn-primary">새로운 아이템</div>
+<table>
+    @foreach (var todo in _todoItems)
+    {
+        @if (!todo.IsComplete)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" @bind="@todo.IsComplete" @onclick="async eventArgs => { await CompleteTodo(todo); }" />
+                </td>
+                <td>@todo.Content</td>
+            </tr>
+        }
+    }
+</table>
+<h3>대충완료목록</h3>
+<table>
+    @foreach (var todo in _todoItems)
+    {
+        @if (todo.IsComplete)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" @bind="@todo.IsComplete" @onclick="async eventArgs => { await CompleteTodo(todo); }" />
+                </td>
+                <td class="text-success">@todo.Content</td>
+            </tr>
+        }
+    }
+</table>
+@code {
+    private string itxTodoContent { get; set; }
+    private List<TodoItem> _todoItems = new List<TodoItem>();
+
+    private void itxTodoContent_OnKeyDown(KeyboardEventArgs e)
+    {
+        StateHasChanged();
+
+        if(e.Key.ToLower() == "Enter".ToLower())
+        {
+            _todoItems.Add(new TodoItem { Content = itxTodoContent });
+        }
+    }
+
+    private async Task CompleteTodo(TodoItem todo)
+    {
+
+        if (todo.IsComplete == false)
+        {
+            await (FakeUpdateTodoItem(todo));
+        }
+
+        base.StateHasChanged();
+    }
+
+    private Task FakeUpdateTodoItem(TodoItem todo)
+    {
+        return Task.FromResult(0);
+    }
+
+}
